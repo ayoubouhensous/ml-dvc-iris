@@ -33,6 +33,7 @@ ml-dvc-iris/
 └─ Dockerfile                  # Containerisation du pipeline
 
 ````
+![Structure du project](images/project.png)
 
 ---
 
@@ -239,6 +240,10 @@ Le workflow GitHub Actions exécute automatiquement le pipeline DVC à chaque **
      [https://drive.google.com/drive/folders/1lpWbBYEeopXY8ncYAEsD6bTisTuN6PNL?dmr=1&ec=wgc-drive-globalnav-goto](https://drive.google.com/drive/folders/1lpWbBYEeopXY8ncYAEsD6bTisTuN6PNL?dmr=1&ec=wgc-drive-globalnav-goto)
    * Dans le workflow GitHub Actions, les secrets GitHub (`GDRIVE_CREDENTIALS_JSON`, `GDRIVE_CLIENT_ID`, `GDRIVE_CLIENT_SECRET`) sont utilisés pour authentifier DVC et accéder au dossier.
 
+   **Capture d’écran des secrets GitHub** :  
+   ![Secrets GitHub](images/secrets.png)
+
+
 3. **Étapes du workflow**
 
    * `dvc pull` : récupère les données et modèles depuis Google Drive.
@@ -269,10 +274,19 @@ Le workflow GitHub Actions exécute automatiquement le pipeline DVC à chaque **
 
 ### Captures d’écran à prévoir
 
-1. **Contenu du dossier Google Drive** : fichiers `iris_preprocessed.csv`, modèles et métriques.
-   *(Image 1)*
-2. **Test de suppression locale + récupération via `dvc pull`** : suppression d’un fichier/dossier et restauration réussie.
-   *(Image 4)*
+1. **Contenu du dossier Google Drive** : ![Google Drive Remote](images/googledrive.png)
+
+2. **Test de suppression locale + récupération via `dvc pull`** :
+   1️⃣ **Suppression locale du dossier `data/`**  
+Avant de récupérer les fichiers depuis DVC, on supprime le dossier `data/` pour simuler une perte locale :  
+![Suppression locale](images/supp1.png)
+
+2️⃣ **Récupération des fichiers avec `dvc pull`**  
+Après avoir lancé `dvc pull`, les fichiers manquants sont récupérés correctement depuis le remote :  
+![Récupération avec dvc pull](images/supp2.png)
+
+
+
 
 ---
 
@@ -302,10 +316,10 @@ docker build -t ml-dvc-iris:latest .
 docker run --rm ml-dvc-iris:latest
 ```
 
-**Screenshots à ajouter** :
+![Image Docker](images/imagedocker.png)
 
-* `docker build` réussi
-* `docker run` exécuté
+![Image Container](images/container.png)
+
 
 ---
 
@@ -328,11 +342,23 @@ git push -u origin feature/test-mlops
   * Pipeline DVC complet
   * Commentaire CML avec métriques
 
-**Screenshots à ajouter** :
+Pour vérifier que toute la chaîne CI s’exécute automatiquement, nous avons procédé à un test avec une Pull Request.
 
-* PR créée
-* Workflow Actions
-* Commentaire CML
+1️⃣ **Création de la Pull Request**  
+Nous avons créé une branche de test `feature/test-mlops` et ouvert une PR vers `main`.  
+Cette PR est nommée **PR** :  
+![Pull Request créée](images/PR.png)
+
+2️⃣ **Workflow en cours d’exécution**  
+Après l’ouverture de la PR, le workflow GitHub Actions s’exécute automatiquement, reproduisant le pipeline DVC (`dvc repro`) et générant les métriques.  
+Cette étape est représentée par **PR1** :  
+![Workflow en cours](images/PR1.png)
+
+3️⃣ **Résultat final et métriques**  
+Une fois le pipeline terminé avec succès, un commentaire CML est ajouté automatiquement à la PR avec les résultats et métriques du modèle.  
+Cette étape correspond à **PR2** :  
+![Commentaire CML et métriques](images/PR2.png)
+
 
 ---
 
@@ -346,5 +372,3 @@ git push -u origin feature/test-mlops
 
 ```
 
-Veux‑tu que je fasse ça ?
-```
