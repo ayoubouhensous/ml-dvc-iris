@@ -60,3 +60,27 @@ stages:
       hash: md5
       md5: 7fc81026f1b4cbc670dccd8d8520e2b9
       size: 476
+  deploy:
+    cmd: python scripts/deploy.py
+    deps:
+    - path: metrics/eval_metrics.json
+      hash: md5
+      md5: 7fc81026f1b4cbc670dccd8d8520e2b9
+      size: 476
+    - path: models/random_forest.pkl
+      hash: md5
+      md5: 337c5c45951699c9869c0c6dcd57b6e7
+      size: 116945
+    - path: scripts/deploy.py
+      hash: md5
+      md5: 58653675ca4ea5b692866e50a3d8db1e
+      size: 1970
+    outs:
+    - path: metrics/best_metrics.json
+      hash: md5
+      md5: ce3618d86a47cfba7d4c112ac4a2d677
+      size: 23
+    - path: models/production_model.pkl
+      hash: md5
+      md5: 337c5c45951699c9869c0c6dcd57b6e7
+      size: 116945
