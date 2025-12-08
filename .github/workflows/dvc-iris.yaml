@@ -1,4 +1,4 @@
-name: churn-mlops-pipeline
+name: ml-dvc-iris-pipeline
 
 on: [push]
 
@@ -13,24 +13,29 @@ jobs:
       REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # 3. Install CML utility
       - name: Install CML utility
         uses: iterative/setup-cml@v2
 
+      # 4. Install Python dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install --no-cache-dir -r requirements.txt
           pip install --no-cache-dir "dvc[gdrive]==3.63.0"
 
-      - name: Configure DVC remote for Google Drive
+      # 5. Configure DVC remote for Google Drive
+      - name: Configure DVC remote
         run: |
           echo '${{ secrets.GDRIVE_CREDENTIALS_JSON }}' > gdrive_user_credentials.json
           dvc remote modify --local gdrive_remote gdrive_user_credentials_file gdrive_user_credentials.json
@@ -38,24 +43,20 @@ jobs:
           dvc remote modify --local gdrive_remote gdrive_client_secret "${{ secrets.GDRIVE_CLIENT_SECRET }}"
           dvc remote list
 
+      # 6. Pull data & models from DVC remote
       - name: Pull data & models from DVC remote
         run: dvc pull -v
 
-      - name: Reproduce the DVC pipeline
-        run: dvc repro
+      # 7. Reproduce the DVC pipeline
+      - name: Reproduce DVC pipeline
+        run: dvc repro -v
 
-      - name: Track new artifacts with DVC
-        run: |
-          dvc add data/ models/
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.dvc models.dvc dvc.lock || echo "Nothing to commit"
-          git commit -m "Update DVC artifacts [skip ci]" || echo "Nothing to commit"
-
-      - name: Push new artifacts to DVC remote
+      # 8. Push updated artifacts to DVC remote
+      - name: Push artifacts to DVC remote
         run: dvc push -v
 
-      - name: Generate and publish CML report
+      # 9. Generate and publish evaluation report
+      - name: Generate CML report
         run: |
           if [ -f metrics/eval_metrics.json ]; then
             echo "## Evaluation Metric" > report.md
