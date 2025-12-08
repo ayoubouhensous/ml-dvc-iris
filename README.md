@@ -361,12 +361,60 @@ Cette étape correspond à **PR2** :
 
 
 ---
+## 10. Déploiement automatique du meilleur modèle
 
+Le stage `deploy` de DVC permet de **promouvoir automatiquement le meilleur modèle** en fonction de l’accuracy évaluée sur l’ensemble complet des données.
+
+### Fonctionnement
+
+1. Le script `scripts/deploy.py` :
+   * Lit les métriques d’évaluation (`metrics/eval_metrics.json`).
+   * Compare l’accuracy courante à la meilleure accuracy connue (`metrics/best_metrics.json`).
+   * Si la nouvelle accuracy est meilleure :
+     * Copie `models/random_forest.pkl` vers `models/production_model.pkl`.
+     * Met à jour `metrics/best_metrics.json`.
+
+2. Ajout d’un stage `deploy` dans `dvc.yaml` :
+
+```yaml
+stages:
+  deploy:
+    cmd: python scripts/deploy.py
+    deps:
+      - scripts/deploy.py
+      - models/random_forest.pkl
+      - metrics/eval_metrics.json
+    outs:
+      - models/production_model.pkl
+      - metrics/best_metrics.json
+````
+
+3. Exécution du pipeline complet :
+
+```bash
+dvc repro
+```
+
+### Exemple d’output
+
+Le stage `deploy` a été exécuté automatiquement après `evaluate` :
+
+![Déploiement du meilleur modèle](images/deploy.png)
+
+```
+Accuracy courante: 1.0, meilleure accuracy connue: 0.0
+Modèle promu vers models/production_model.pkl
+Meilleures métriques mises à jour dans metrics/best_metrics.json
+Updating lock file 'dvc.lock'
+```
+
+---
 ## 11. Conclusion
 
 * Pipeline MLOps fonctionnel localement et sur GitHub Actions
 * Artefacts versionnés avec DVC et stockés sur Google Drive
 * Modèle entraîné et évalué
+* Déploiement automatique du meilleur modèle avec mise à jour de `production_model.pkl`
 * Containerisation avec Docker prête à l’usage
 * Workflow end-to-end validé sur Pull Request
 
