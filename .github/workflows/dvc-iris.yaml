@@ -58,7 +58,7 @@ jobs:
       - name: Generate and publish CML report
         run: |
           if [ -f metrics/eval_metrics.json ]; then
-            echo "## Evaluation Metrics" > report.md
+            echo "## Evaluation Metric" > report.md
             cat metrics/eval_metrics.json >> report.md
             cml comment create report.md
           else
