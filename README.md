@@ -370,5 +370,4 @@ Cette étape correspond à **PR2** :
 * Containerisation avec Docker prête à l’usage
 * Workflow end-to-end validé sur Pull Request
 
-```
 
