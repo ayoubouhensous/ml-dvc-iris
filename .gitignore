@@ -1,0 +1,3 @@
+.dvc/config.local
+.dvc/gdrive-creds.json
+gdrive_user_credentials.json
