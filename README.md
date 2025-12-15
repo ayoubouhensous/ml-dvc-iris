@@ -1,6 +1,10 @@
 # ml-dvc-iris — Pipeline MLOps complet avec DVC, GitHub Actions, CML et Docker
   
 
+### Réalisé par
+- **Ayoub Ouhensous**
+- **Zakaria El Guazzar**
+
 ## Contexte
 Ce projet a été développé de zéro comme un projet MLOps basé sur le dataset **Iris**.  
 L'objectif principal est de mettre en place un pipeline complet permettant :
